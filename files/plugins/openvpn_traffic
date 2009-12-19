@@ -1,0 +1,100 @@
+#!/usr/bin/perl
+#
+# Copyright (C) 2007 Alban Peignier <alban.peignier@free.fr>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; version 2 dated June,
+# 1991.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+# If you improve this script please send your version to my email address
+# with the copyright notice upgrade with your name.
+#
+# Munin's plugin to monitor the traffic of connected clients to openvpn server
+#
+# Usage: copy or link into /etc/munin/plugins
+#
+# Parameters:
+#
+#       config   (required)
+#       autoconf (optional - used by munin-config)
+#
+# $Log$
+# Revision 1.1  2007/02/06 22:06:10  alban
+# First release
+#
+# Based on Rodolphe Quiedeville's openvpn plugin and the if_ munin plugin
+#
+#%# family=auto
+#%# capabilities=autoconf
+
+use strict;
+
+my $statuslogfile = $ENV{'statusfile'} || "/var/lib/openvpn/status";
+my $down = 0;
+my $up = 0;
+
+if($ARGV[0] and $ARGV[0] eq "autoconf" ) {
+    if(-f $statuslogfile) {
+	if(-r $statuslogfile) {
+	    print "yes\n";
+	    exit 0;
+	} else {
+	    print "no (logfile not readable)\n";
+	}
+    } else {
+	print "no (logfile not found)\n";
+    }
+    exit 1;
+}
+
+if ($ARGV[0] and $ARGV[0] eq "config" ){
+		print "graph_order down up\n";
+		print "graph_title OpenVpn traffic\n";
+		print "graph_args --base 1000\n";
+		print "graph_vlabel bits in (-) / out (+) per \${graph_period}\n";
+		print "graph_category network\n";
+		print "graph_info This graph shows the traffic of the OpenVpn network interfaces.\n";
+		print "down.label received\n";
+	  print "down.type COUNTER\n";
+	  print "down.graph no\n";
+	  print "down.cdef down,8,*\n";
+	  print "up.label bps\n";
+	  print "up.type COUNTER\n";
+		print "up.negative down\n";
+		print "up.cdef up,8,*\n";
+    exit 0;
+}
+
+if (-f "$statuslogfile") {
+    open(IN, "$statuslogfile") or exit 4;
+    my $flagu = 0;
+		my @client_info;
+		
+    while(<IN>) {
+	if(/^ROUTING TABLE$/) {
+	    $flagu = 0;
+	}
+	if ($flagu) {
+			@client_info = split(',',$_);
+	    $down = $down + @client_info[2];
+	    $up = $up + @client_info[3];
+	}
+	if(/^Common Name,Real Address,Bytes Received,Bytes Sent,Connected Since$/) {
+	    $flagu = 1;
+	}
+    }
+    close(IN);
+}
+
+print "down.value " . $down."\n";
+print "up.value " . $up."\n";
