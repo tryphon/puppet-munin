@@ -65,11 +65,13 @@ if ($ARGV[0] and $ARGV[0] eq "config" ){
 		print "graph_category network\n";
 		print "graph_info This graph shows the traffic of the OpenVpn network interfaces.\n";
 		print "down.label received\n";
-	  print "down.type COUNTER\n";
+	  print "down.type DERIVE\n";
+	  print "down.min 0\n";
 	  print "down.graph no\n";
 	  print "down.cdef down,8,*\n";
 	  print "up.label bps\n";
-	  print "up.type COUNTER\n";
+	  print "up.type DERIVE\n";
+	  print "up.min 0\n";
 		print "up.negative down\n";
 		print "up.cdef up,8,*\n";
     exit 0;
