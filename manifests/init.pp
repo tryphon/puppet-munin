@@ -76,11 +76,26 @@ class munin {
 
   }
 
-
-  define plugin ($ensure = "present", $script_path = "/usr/share/munin/plugins", $script = '', $config = '') {
+  define plugin($ensure = "present", $script_path = "/usr/share/munin/plugins", $script = '', $config = '', $source = '') {
 	  debug ( "munin_plugin: name=$name, ensure=$ensure, script_path=$script_path" )
-	  $plugin = "/etc/munin/plugins/$name"
 
+    $real_source = $source ? {
+      true => [ "puppet:///munin/plugins/$name", "puppet:///files/munin/plugins/$name" ],
+      default => $source
+    }
+
+    if $real_source != '' {
+      file { "/usr/local/share/munin/plugins/$name":
+        ensure => $ensure,
+        source => $real_source
+      }
+
+      $real_script_path = "/usr/local/share/munin/plugins"
+    } else {
+      $real_script_path = $script_path
+    }
+
+	  $plugin = "/etc/munin/plugins/$name"
 	  $plugin_conf = "/etc/munin/plugin-conf.d/$name.conf"
 	  case $ensure {
 		  "absent": {
@@ -103,7 +118,7 @@ class munin {
 		    debug ( "munin_plugin: making $plugin using src: $plugin_src" )
         
 		    file { $plugin:
-          ensure => "$script_path/${plugin_src}",
+          ensure => "$real_script_path/${plugin_src}",
 	        require => Package["munin-node"],
 	        notify => Service["munin-node"],
         }
