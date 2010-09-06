@@ -87,7 +87,8 @@ class munin {
     if $real_source != '' {
       file { "/usr/local/share/munin/plugins/$name":
         ensure => $ensure,
-        source => $real_source
+        source => $real_source,
+        mode => 755
       }
 
       $real_script_path = "/usr/local/share/munin/plugins"
