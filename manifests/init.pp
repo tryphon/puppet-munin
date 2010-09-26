@@ -74,6 +74,8 @@ class munin {
       
     }
 
+    include munin::anode::tiger
+
   }
 
   define plugin($ensure = "present", $script_path = "/usr/share/munin/plugins", $script = '', $config = '', $source = '') {
@@ -155,4 +157,10 @@ class munin {
     }
   }
   
+}
+
+class munin::anode::tiger {
+  if $tiger_enabled {
+    tiger::ignore { "munin_node": }
+  }
 }
