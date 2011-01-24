@@ -5,6 +5,13 @@ class munin {
   class server {
     package { munin: }
 
+    include apt::backports
+    apt::preferences { munin:
+      package => munin, 
+      pin => "release a=lenny-backports",
+      priority => 999
+    }
+
     concatenated_file { "/etc/munin/munin.conf":
       dir => "/etc/munin/conf.d",
       require => Package[munin]
@@ -38,6 +45,13 @@ class munin {
   class anode {
 
     package { munin-node: ensure => installed }
+
+    include apt::backports
+    apt::preferences { munin-node:
+      package => munin-node, 
+      pin => "release a=lenny-backports",
+      priority => 999
+    }
 
     service { munin-node:
       ensure    => running,
