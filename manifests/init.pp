@@ -10,7 +10,8 @@ class munin {
       apt::preferences { munin:
         package => munin, 
         pin => "release a=lenny-backports",
-        priority => 999
+        priority => 999,
+        before => Package[munin]
       }
     }
 
@@ -53,7 +54,8 @@ class munin {
       apt::preferences { munin-node:
         package => munin-node, 
         pin => "release a=lenny-backports",
-        priority => 999
+        priority => 999,
+        before => Package["munin-node"]
       }
     }
 
