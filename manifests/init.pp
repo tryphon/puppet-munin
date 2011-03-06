@@ -3,7 +3,7 @@ import "common" # require concatenated_file defines
 class munin {
 
   class server {
-    package { munin: }
+    package { munin: ensure => latest }
 
     include apt::backports
     apt::preferences { munin:
@@ -44,7 +44,7 @@ class munin {
   # node is a reserved work :-(
   class anode {
 
-    package { munin-node: ensure => installed }
+    package { munin-node: ensure => latest }
 
     include apt::backports
     apt::preferences { munin-node:
