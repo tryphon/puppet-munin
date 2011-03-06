@@ -5,11 +5,13 @@ class munin {
   class server {
     package { munin: ensure => latest }
 
-    include apt::backports
-    apt::preferences { munin:
-      package => munin, 
-      pin => "release a=lenny-backports",
-      priority => 999
+    if $lsbdistcodename == "lenny" {
+      include apt::backports
+      apt::preferences { munin:
+        package => munin, 
+        pin => "release a=lenny-backports",
+        priority => 999
+      }
     }
 
     concatenated_file { "/etc/munin/munin.conf":
@@ -46,11 +48,13 @@ class munin {
 
     package { munin-node: ensure => latest }
 
-    include apt::backports
-    apt::preferences { munin-node:
-      package => munin-node, 
-      pin => "release a=lenny-backports",
-      priority => 999
+    if $lsbdistcodename == "lenny" {
+      include apt::backports
+      apt::preferences { munin-node:
+        package => munin-node, 
+        pin => "release a=lenny-backports",
+        priority => 999
+      }
     }
 
     service { munin-node:
