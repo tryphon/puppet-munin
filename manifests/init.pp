@@ -99,6 +99,7 @@ class munin {
   }
 
   define plugin($ensure = "present", $script_path = "/usr/share/munin/plugins", $script = '', $config = '', $source = '') {
+    include munin::anode
 	  debug ( "munin_plugin: name=$name, ensure=$ensure, script_path=$script_path" )
 
     $real_source = $source ? {
