@@ -5,7 +5,7 @@ class munin {
   class server {
     package { munin: ensure => latest }
 
-    if $lsbdistcodename == "lenny" {
+    if $debian::lenny {
       include apt::backports
       apt::preferences { munin:
         package => munin, 
@@ -49,7 +49,7 @@ class munin {
 
     package { munin-node: ensure => latest }
 
-    if $lsbdistcodename == "lenny" {
+    if $debian::lenny {
       include apt::backports
       apt::preferences { munin-node:
         package => munin-node, 
