@@ -42,6 +42,13 @@ class munin {
       require => Package[munin]
     }
 
+    # TODO squeeze munin use /var/cache/munin/www
+    file { "/var/www/munin":
+      ensure => directory,
+      owner => munin,
+      group => munin,
+      require => Package[munin]
+    }       
   }
 
   # node is a reserved work :-(
