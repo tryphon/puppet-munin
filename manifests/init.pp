@@ -48,7 +48,9 @@ class munin {
       owner => munin,
       group => munin,
       require => Package[munin]
-    }       
+    }
+
+    backup::model { munin: }
   }
 
   # node is a reserved work :-(
