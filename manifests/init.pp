@@ -116,11 +116,15 @@ class munin {
       default => $source
     }
 
+	  $plugin = "/etc/munin/plugins/$name"
+	  $plugin_conf = "/etc/munin/plugin-conf.d/$name.conf"
+
     if $real_source != '' {
       file { "/usr/local/share/munin/plugins/$name":
         ensure => $ensure,
         source => $real_source,
-        mode => 755
+        mode => 755,
+        before => File[$plugin]
       }
 
       $real_script_path = "/usr/local/share/munin/plugins"
@@ -128,8 +132,6 @@ class munin {
       $real_script_path = $script_path
     }
 
-	  $plugin = "/etc/munin/plugins/$name"
-	  $plugin_conf = "/etc/munin/plugin-conf.d/$name.conf"
 	  case $ensure {
 		  "absent": {
 			  debug ( "munin_plugin: suppressing $plugin" )
