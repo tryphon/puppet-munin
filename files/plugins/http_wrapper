@@ -1,0 +1,17 @@
+#!/bin/sh
+
+case $1 in
+    config)
+        if `echo "$url" | grep -q "?"`; then
+            url="$url&mode=config"
+        else
+            url="$url?mode=config"
+        fi
+        ;;
+    autoconf)
+        echo "yes"
+        exit 0
+        ;;
+esac
+        
+exec curl $url
