@@ -13,5 +13,5 @@ case $1 in
         exit 0
         ;;
 esac
-        
-exec curl $url
+
+exec curl --insecure $url
