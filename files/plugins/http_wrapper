@@ -14,4 +14,4 @@ case $1 in
         ;;
 esac
 
-exec curl --insecure $url
+exec curl -s --insecure $url
