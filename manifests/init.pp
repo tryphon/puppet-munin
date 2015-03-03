@@ -1,70 +1,25 @@
 class munin {
 
   class server {
-    package { munin: ensure => latest }
+    package { 'munin': }
 
-    if $debian::lenny {
-      include apt::backports
-      apt::preferences { munin:
-        package => munin,
-        pin => 'release a=lenny-backports',
-        priority => 999,
-        before => Package[munin]
-      }
+    file { '/etc/munin/munin-conf.d/graph.conf':
+      content => "graph_strategy cgi\n"
     }
 
-    concatenated_file { '/etc/munin/munin.conf':
-      dir => '/etc/munin/conf.d',
-      require => Package[munin]
-    }
-
-    concatenated_file_source { '00munin.conf.header':
-      dir    => '/etc/munin/conf.d',
-      source => 'puppet:///munin/munin.conf.header'
-    }
-
-    concatenated_file_source { 'munin.conf.local':
-      dir    => '/etc/munin/conf.d',
+    file { '/etc/munin/munin-conf.d/local.conf':
       source => 'puppet:///files/munin/munin.conf'
     }
 
-    # munin user can't create the log files and
-    # munin tools can fail when log file is missing
-    file { [ '/var/log/munin/munin-update.log',
-      '/var/log/munin/munin-graph.log',
-      '/var/log/munin/munin-html.log',
-      '/var/log/munin/munin-limits.log' ] :
-      ensure => present,
-      owner => munin,
-      group => adm,
-      require => Package[munin]
-    }
+    backup::model { 'munin': }
 
-    # TODO squeeze munin use /var/cache/munin/www
-    file { '/var/www/munin':
-      ensure => directory,
-      owner => munin,
-      group => munin,
-      require => Package[munin]
-    }
-
-    backup::model { munin: }
+    munin::plugin { 'munin_stats': }
   }
 
   # node is a reserved work :-(
   class anode {
 
     package { munin-node: ensure => latest }
-
-    if $debian::lenny {
-      include apt::backports
-      apt::preferences { munin-node:
-        package => munin-node,
-        pin => 'release a=lenny-backports',
-        priority => 999,
-        before => Package['munin-node']
-      }
-    }
 
     service { munin-node:
       ensure    => running,
@@ -102,7 +57,6 @@ class munin {
     }
 
     include munin::anode::tiger
-
   }
 
   define plugin($ensure = 'present', $script_path = '/usr/share/munin/plugins', $script = '', $config = '', $source = '') {
