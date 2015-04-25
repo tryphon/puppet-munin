@@ -19,7 +19,7 @@ class munin {
 
     munin::plugin { 'munin_stats': }
 
-    define anode($ip_address, $load_warning = 0.3, $load_critical = 0.7, $cpu_system_warning = 40, $cpu_system_critical = 80, $cpu_user_warning = 40, $cpu_user_critical = 80, $cpu_iowait_warning = 60, $cpu_iowait_critical = 80) {
+    define anode($ip_address, $load_warning = 0.4, $load_critical = 0.7, $cpu_system_warning = 40, $cpu_system_critical = 80, $cpu_user_warning = 40, $cpu_user_critical = 80, $cpu_iowait_warning = 60, $cpu_iowait_critical = 80) {
       file { "/etc/munin/munin-conf.d/node-${name}.conf":
         content => template('munin/node.conf'),
         require => Package['munin']
