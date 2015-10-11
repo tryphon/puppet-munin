@@ -8,18 +8,20 @@ class munin {
     }
 
     file { '/etc/munin/munin-conf.d/graph.conf':
-      content => "graph_strategy cgi\n"
+      content => "graph_strategy cgi\n",
+      require => Package['munin']
     }
 
     file { '/etc/munin/munin-conf.d/local.conf':
-      source => 'puppet:///files/munin/munin.conf'
+      source => 'puppet:///files/munin/munin.conf',
+      require => Package['munin']
     }
 
     backup::model { 'munin': }
 
     munin::plugin { 'munin_stats': }
 
-    define anode($ip_address, $load_warning = 0.4, $load_critical = 0.7, $cpu_system_warning = 40, $cpu_system_critical = 80, $cpu_user_warning = 40, $cpu_user_critical = 80, $cpu_iowait_warning = 60, $cpu_iowait_critical = 80) {
+    define anode($ip_address = $name, $load_warning = 0.4, $load_critical = 0.7, $cpu_system_warning = 40, $cpu_system_critical = 80, $cpu_user_warning = 40, $cpu_user_critical = 80, $cpu_iowait_warning = 60, $cpu_iowait_critical = 80) {
       file { "/etc/munin/munin-conf.d/node-${name}.conf":
         content => template('munin/node.conf'),
         require => Package['munin']
