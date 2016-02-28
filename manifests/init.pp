@@ -157,6 +157,24 @@ class munin {
 
 }
 
+class munin::snmp {
+  file { '/usr/local/sbin/munin-snmp-host':
+    source => "puppet:///munin/munin-snmp-host.rb",
+    mode => 755
+  }
+
+  # sudo /usr/sbin/munin-node-configure --snmp=HOST | grep "yes" | awk '{ print $1 }' | sed 's/snmp__//'
+  define host($plugins = []) {
+    $plugin_names = join($plugins, ' ')
+    exec { "munin-snmp-host-$name":
+      command => "munin-snmp-host create $name $plugin_names",
+      unless => "munin-snmp-host check $name $plugin_names",
+	    require => [Package['munin-node'], File['/usr/local/sbin/munin-snmp-host']],
+	    notify => Service['munin-node']
+    }
+  }
+}
+
 class munin::anode::tiger {
   if $tiger_enabled {
     tiger::ignore { "munin_node": }
