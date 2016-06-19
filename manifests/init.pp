@@ -78,7 +78,7 @@ class munin {
 	  debug ( "munin_plugin: name=$name, ensure=$ensure, script_path=$script_path" )
 
     $real_source = $source ? {
-      true => [ "puppet:///munin/plugins/$name", "puppet:///files/munin/plugins/$name" ],
+      true => [ "puppet:///modules/munin/plugins/$name", "puppet:///files/munin/plugins/$name" ],
       default => $source
     }
 
@@ -184,6 +184,6 @@ class munin::anode::tiger {
 define munin::http::plugin($url) {
   munin::plugin { $name:
     config => "env.url $url",
-    source => "puppet:///munin/plugins/http_wrapper",
+    source => "puppet:///modules/munin/plugins/http_wrapper",
   }
 }
