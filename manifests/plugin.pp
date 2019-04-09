@@ -1,4 +1,4 @@
-define munin::plugin($ensure = 'present', $script_path = '/usr/share/munin/plugins', $script = '', $config = '', $source = '') {
+define munin::plugin($ensure = 'present', $script_path = '/usr/share/munin/plugins', $script = '', $config = '', $source = '', $manage_link = true) {
   include munin::anode
         debug ( "munin_plugin: name=$name, ensure=$ensure, script_path=$script_path" )
 
@@ -43,10 +43,12 @@ define munin::plugin($ensure = 'present', $script_path = '/usr/share/munin/plugi
       }
       	    debug ( "munin_plugin: making $plugin using src: $plugin_src" )
 
+	if $manage_link {
       	    file { $plugin:
         ensure => "$real_script_path/${plugin_src}",
               require => Package['munin-node'],
               notify => Service['munin-node'],
+		}
       }
     }
   }
